@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
   onSuccess: (email: string) => void;
@@ -63,26 +63,38 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h3 className="text-2xl font-bold text-foreground">Welcome Back</h3>
-        <p className="text-muted-foreground">Sign in to your secure account</p>
+      <div className="text-center space-y-4">
+        <h2 className="text-xl font-semibold text-foreground">Sign in to ID.me</h2>
+        <div className="text-sm text-muted-foreground">
+          New to ID.me?{" "}
+          <a 
+            href="#" 
+            className="text-primary hover:underline"
+            data-testid="link-create-account"
+          >
+            Create an ID.me account
+          </a>
+        </div>
+      </div>
+
+      <div className="text-sm text-muted-foreground mb-4">
+        * Indicates a required field
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Email Input */}
         <div className="space-y-2">
-          <Label htmlFor="email">Email Address</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              {...form.register("email")}
-              type="email"
-              id="email"
-              data-testid="input-email"
-              className="pl-10"
-              placeholder="your.email@example.com"
-            />
-          </div>
+          <Label htmlFor="email" className="text-sm font-medium">
+            Email *
+          </Label>
+          <Input
+            {...form.register("email")}
+            type="email"
+            id="email"
+            data-testid="input-email"
+            className="border-gray-300"
+            placeholder="Enter your email address"
+          />
           {form.formState.errors.email && (
             <p className="text-destructive text-sm" data-testid="error-email">
               {form.formState.errors.email.message}
@@ -92,16 +104,17 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
         {/* Password Input */}
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="text-sm font-medium">
+            Password *
+          </Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               {...form.register("password")}
               type={showPassword ? "text" : "password"}
               id="password"
               data-testid="input-password"
-              className="pl-10 pr-10"
-              placeholder="••••••••"
+              className="border-gray-300 pr-10"
+              placeholder="Enter password"
             />
             <button
               type="button"
@@ -118,22 +131,9 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             </p>
           )}
         </div>
-
-        {/* Remember Me & Forgot Password */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              {...form.register("rememberMe")}
-              id="rememberMe"
-              data-testid="checkbox-remember-me"
-            />
-            <Label 
-              htmlFor="rememberMe" 
-              className="text-sm text-muted-foreground cursor-pointer"
-            >
-              Remember me
-            </Label>
-          </div>
+        
+        {/* Forgot Password Link */}
+        <div className="text-right">
           <a 
             href="#" 
             className="text-sm text-primary hover:underline"
@@ -143,28 +143,44 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           </a>
         </div>
 
+        {/* Remember Me */}
+        <div className="space-y-2">
+          <div className="flex items-start space-x-2">
+            <Checkbox 
+              {...form.register("rememberMe")}
+              id="rememberMe"
+              data-testid="checkbox-remember-me"
+            />
+            <div>
+              <Label 
+                htmlFor="rememberMe" 
+                className="text-sm font-medium cursor-pointer"
+              >
+                Remember me
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                For your security, select only on your devices.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Sign In Button */}
         <Button 
           type="submit" 
-          className="w-full"
+          className="w-full bg-primary hover:bg-primary/90"
           disabled={loginMutation.isPending}
           data-testid="button-sign-in"
         >
-          <span>{loginMutation.isPending ? "Signing In..." : "Sign In"}</span>
-          <ArrowRight className="ml-2 w-4 h-4" />
+          {loginMutation.isPending ? "Signing In..." : "Sign In"}
         </Button>
       </form>
 
-      {/* Create Account Link */}
-      <div className="text-center">
-        <span className="text-muted-foreground text-sm">Don't have an account? </span>
-        <a 
-          href="#" 
-          className="text-primary text-sm font-medium hover:underline"
-          data-testid="link-create-account"
-        >
-          Create Account
-        </a>
+      {/* Social Media Message */}
+      <div className="mt-6 p-4 bg-muted rounded-md">
+        <p className="text-sm text-muted-foreground text-center">
+          Social media sign-in is no longer available. Please sign in with your email.
+        </p>
       </div>
     </div>
   );
