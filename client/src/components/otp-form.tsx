@@ -135,22 +135,22 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="text-center space-y-2">
-        <div className="w-16 h-16 shield-gradient rounded-xl flex items-center justify-center shadow-lg mx-auto mb-4">
-          <Smartphone className="text-white w-8 h-8" />
+        <div className="w-12 h-12 sm:w-16 sm:h-16 shield-gradient rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3 sm:mb-4">
+          <Smartphone className="text-white w-6 h-6 sm:w-8 sm:h-8" />
         </div>
-        <h3 className="text-2xl font-bold blue-header">Verify Your Identity</h3>
-        <p className="text-muted-foreground">Enter the 6-digit code sent to your email</p>
-        <p className="text-sm text-muted-foreground" data-testid="text-email-display">
+        <h3 className="text-xl sm:text-2xl font-bold blue-header">Verify Your Identity</h3>
+        <p className="text-sm sm:text-base text-muted-foreground px-2">Enter the 6-digit code sent to your email</p>
+        <p className="text-xs sm:text-sm text-muted-foreground break-all px-2" data-testid="text-email-display">
           {email}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* OTP Input */}
-        <div className="space-y-4">
-          <div className="flex justify-center space-x-3">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex justify-center space-x-2 sm:space-x-3 px-2">
             {otp.map((digit, index) => (
               <Input
                 key={index}
@@ -160,7 +160,7 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
                 value={digit}
                 onChange={(e) => handleOTPInput(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="otp-input"
+                className="otp-input-responsive"
                 data-testid={`input-otp-${index}`}
               />
             ))}
@@ -173,8 +173,8 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
         </div>
 
         {/* Timer and Resend */}
-        <div className="text-center space-y-4">
-          <div className="text-sm text-muted-foreground">
+        <div className="text-center space-y-3 sm:space-y-4 px-2">
+          <div className="text-xs sm:text-sm text-muted-foreground">
             Code expires in{" "}
             <span className="font-medium text-foreground" data-testid="text-timer">
               {formatTime(timeLeft)}
@@ -185,7 +185,7 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
             variant="ghost"
             onClick={handleResend}
             disabled={isResendDisabled || resendOTPMutation.isPending}
-            className="text-primary hover:text-primary/80"
+            className="text-primary hover:text-primary/80 text-sm sm:text-base"
             data-testid="button-resend-otp"
           >
             {resendOTPMutation.isPending ? "Sending..." : "Resend Code"}
@@ -195,14 +195,14 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
         {/* Verify Button */}
         <Button
           type="submit"
-          className="w-full"
+          className="w-full h-10 sm:h-11"
           disabled={verifyOTPMutation.isPending || otp.some((digit) => !digit)}
           data-testid="button-verify-otp"
         >
-          <span>
+          <span className="text-sm sm:text-base">
             {verifyOTPMutation.isPending ? "Verifying..." : "Verify Code"}
           </span>
-          <Shield className="ml-2 w-4 h-4" />
+          <Shield className="ml-2 w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
       </form>
 
@@ -211,10 +211,10 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
         <Button
           variant="ghost"
           onClick={onBack}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground text-sm sm:text-base"
           data-testid="button-back-to-login"
         >
-          <ArrowLeft className="mr-2 w-4 h-4" />
+          <ArrowLeft className="mr-2 w-3 h-3 sm:w-4 sm:h-4" />
           Back to Login
         </Button>
       </div>

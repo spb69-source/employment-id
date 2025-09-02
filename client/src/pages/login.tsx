@@ -26,9 +26,9 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-md mx-auto">
-          <div className="bg-card rounded-lg shadow-lg p-8 border border-border">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8">
+        <div className="w-full max-w-sm sm:max-w-md mx-auto">
+          <div className="bg-card rounded-lg shadow-lg p-6 sm:p-8 border border-border">
             
             <BrandingPanel />
 
@@ -54,7 +54,7 @@ export default function Login() {
       </div>
 
       {/* Activate Windows Watermark */}
-      <div className="fixed bottom-4 right-4 text-muted-foreground text-xs opacity-50 select-none pointer-events-none">
+      <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 text-muted-foreground text-xs opacity-50 select-none pointer-events-none">
         Activate Windows
       </div>
     </div>

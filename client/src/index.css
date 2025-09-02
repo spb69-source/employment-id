@@ -92,6 +92,10 @@
   @apply w-12 h-12 text-center text-xl font-semibold;
 }
 
+.otp-input-responsive {
+  @apply w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-semibold;
+}
+
 /* Animation for success checkmark */
 @keyframes checkmark {
   0% {

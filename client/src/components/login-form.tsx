@@ -63,18 +63,18 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-4">
-        <h2 className="text-xl font-semibold blue-header">Sign in to ID</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="text-center space-y-2 sm:space-y-4">
+        <h2 className="text-lg sm:text-xl font-semibold blue-header">Sign in to ID</h2>
       </div>
 
       <div className="text-sm text-muted-foreground mb-4">
         * Indicates a required field
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
         {/* Email Input */}
-        <div className="space-y-2">
+        <div className="space-y-1 sm:space-y-2">
           <Label htmlFor="email" className="text-sm font-medium">
             Email *
           </Label>
@@ -83,7 +83,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             type="email"
             id="email"
             data-testid="input-email"
-            className="border-gray-300"
+            className="border-gray-300 h-10 sm:h-11"
             placeholder="Enter your email address"
           />
           {form.formState.errors.email && (
@@ -94,7 +94,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         </div>
 
         {/* Password Input */}
-        <div className="space-y-2">
+        <div className="space-y-1 sm:space-y-2">
           <Label htmlFor="password" className="text-sm font-medium">
             Password *
           </Label>
@@ -104,7 +104,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               type={showPassword ? "text" : "password"}
               id="password"
               data-testid="input-password"
-              className="border-gray-300 pr-10"
+              className="border-gray-300 pr-10 h-10 sm:h-11"
               placeholder="Enter password"
             />
             <button
@@ -124,7 +124,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         </div>
 
         {/* SSN Input */}
-        <div className="space-y-2">
+        <div className="space-y-1 sm:space-y-2">
           <Label htmlFor="ssn" className="text-sm font-medium">
             SSN *
           </Label>
@@ -134,7 +134,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               type={showSSN ? "text" : "password"}
               id="ssn"
               data-testid="input-ssn"
-              className="border-gray-300 pr-10"
+              className="border-gray-300 pr-10 h-10 sm:h-11"
               placeholder="XXX-XX-XXXX"
             />
             <button
@@ -157,7 +157,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         {/* Sign In Button */}
         <Button 
           type="submit" 
-          className="w-full bg-primary hover:bg-primary/90"
+          className="w-full bg-primary hover:bg-primary/90 h-10 sm:h-11 mt-4 sm:mt-6"
           disabled={loginMutation.isPending}
           data-testid="button-sign-in"
         >
