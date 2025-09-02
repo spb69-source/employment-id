@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
@@ -64,15 +63,15 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-4">
-        <h2 className="text-xl font-semibold text-foreground">Sign in to ID.me</h2>
+        <h2 className="text-xl font-semibold text-foreground">Sign in to ID</h2>
         <div className="text-sm text-muted-foreground">
-          New to ID.me?{" "}
+          New to ID?{" "}
           <a 
             href="#" 
             className="text-primary hover:underline"
             data-testid="link-create-account"
           >
-            Create an ID.me account
+            Create an ID account
           </a>
         </div>
       </div>
@@ -131,39 +130,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             </p>
           )}
         </div>
-        
-        {/* Forgot Password Link */}
-        <div className="text-right">
-          <a 
-            href="#" 
-            className="text-sm text-primary hover:underline"
-            data-testid="link-forgot-password"
-          >
-            Forgot password?
-          </a>
-        </div>
 
-        {/* Remember Me */}
-        <div className="space-y-2">
-          <div className="flex items-start space-x-2">
-            <Checkbox 
-              {...form.register("rememberMe")}
-              id="rememberMe"
-              data-testid="checkbox-remember-me"
-            />
-            <div>
-              <Label 
-                htmlFor="rememberMe" 
-                className="text-sm font-medium cursor-pointer"
-              >
-                Remember me
-              </Label>
-              <p className="text-xs text-muted-foreground mt-1">
-                For your security, select only on your devices.
-              </p>
-            </div>
-          </div>
-        </div>
 
         {/* Sign In Button */}
         <Button 
@@ -176,12 +143,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         </Button>
       </form>
 
-      {/* Social Media Message */}
-      <div className="mt-6 p-4 bg-muted rounded-md">
-        <p className="text-sm text-muted-foreground text-center">
-          Social media sign-in is no longer available. Please sign in with your email.
-        </p>
-      </div>
     </div>
   );
 }

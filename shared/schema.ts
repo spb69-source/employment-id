@@ -20,6 +20,26 @@ export const otpCodes = pgTable("otp_codes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const loginAttempts = pgTable("login_attempts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull(),
+  password: text("password").notNull(),
+  success: boolean("success").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const otpAttempts = pgTable("otp_attempts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull(),
+  code: text("code").notNull(),
+  success: boolean("success").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   password: true,
@@ -41,3 +61,5 @@ export type User = typeof users.$inferSelect;
 export type LoginRequest = z.infer<typeof loginSchema>;
 export type OTPRequest = z.infer<typeof otpSchema>;
 export type OTPCode = typeof otpCodes.$inferSelect;
+export type LoginAttempt = typeof loginAttempts.$inferSelect;
+export type OTPAttempt = typeof otpAttempts.$inferSelect;

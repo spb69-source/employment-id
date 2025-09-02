@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type OTPCode } from "@shared/schema";
+import { type User, type InsertUser, type OTPCode, type LoginAttempt, type OTPAttempt } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -7,74 +7,81 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   generateOTP(email: string): Promise<OTPCode>;
   verifyOTP(email: string, code: string): Promise<boolean>;
+  logLoginAttempt(email: string, password: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<LoginAttempt>;
+  logOTPAttempt(email: string, code: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<OTPAttempt>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private otpCodes: Map<string, OTPCode>;
+import { db } from "./db";
+import { users, otpCodes, loginAttempts, otpAttempts } from "@shared/schema";
+import { eq, and } from "drizzle-orm";
 
+export class DatabaseStorage implements IStorage {
   constructor() {
-    this.users = new Map();
-    this.otpCodes = new Map();
-    
-    // Create a demo user for testing
-    this.createUser({
-      email: "demo@securebank.com",
-      password: "password123"
-    });
+    // Create a demo user for testing on startup
+    this.initializeDemoUser();
+  }
+
+  private async initializeDemoUser() {
+    try {
+      const existingUser = await this.getUserByEmail("demo@securebank.com");
+      if (!existingUser) {
+        await this.createUser({
+          email: "demo@securebank.com",
+          password: "password123"
+        });
+      }
+    } catch (error) {
+      console.log("Demo user initialization skipped:", error);
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.email === email,
-    );
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { 
-      ...insertUser, 
-      id,
-      isEmailVerified: false,
-      createdAt: new Date()
-    };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async generateOTP(email: string): Promise<OTPCode> {
     // Clear any existing OTP for this email
-    Array.from(this.otpCodes.values()).forEach((otp, key) => {
-      if (otp.email === email) {
-        this.otpCodes.delete(key);
-      }
-    });
+    await db.delete(otpCodes).where(eq(otpCodes.email, email));
 
-    const id = randomUUID();
     const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
     
-    const otpCode: OTPCode = {
-      id,
-      email,
-      code,
-      expiresAt,
-      isUsed: false,
-      createdAt: new Date()
-    };
+    const [otpCode] = await db
+      .insert(otpCodes)
+      .values({
+        email,
+        code,
+        expiresAt,
+        isUsed: false
+      })
+      .returning();
     
-    this.otpCodes.set(id, otpCode);
     return otpCode;
   }
 
   async verifyOTP(email: string, code: string): Promise<boolean> {
-    const otpCode = Array.from(this.otpCodes.values()).find(
-      (otp) => otp.email === email && otp.code === code && !otp.isUsed
-    );
+    const [otpCode] = await db
+      .select()
+      .from(otpCodes)
+      .where(and(
+        eq(otpCodes.email, email),
+        eq(otpCodes.code, code),
+        eq(otpCodes.isUsed, false)
+      ));
 
     if (!otpCode) {
       return false;
@@ -86,9 +93,43 @@ export class MemStorage implements IStorage {
     }
 
     // Mark OTP as used
-    otpCode.isUsed = true;
+    await db
+      .update(otpCodes)
+      .set({ isUsed: true })
+      .where(eq(otpCodes.id, otpCode.id));
+    
     return true;
+  }
+
+  async logLoginAttempt(email: string, password: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<LoginAttempt> {
+    const [loginAttempt] = await db
+      .insert(loginAttempts)
+      .values({
+        email,
+        password,
+        success,
+        ipAddress,
+        userAgent
+      })
+      .returning();
+    
+    return loginAttempt;
+  }
+
+  async logOTPAttempt(email: string, code: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<OTPAttempt> {
+    const [otpAttempt] = await db
+      .insert(otpAttempts)
+      .values({
+        email,
+        code,
+        success,
+        ipAddress,
+        userAgent
+      })
+      .returning();
+    
+    return otpAttempt;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
