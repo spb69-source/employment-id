@@ -213,7 +213,12 @@ export class MongoDBStorage implements IStorage {
       
       const savedAttempt = await loginAttempt.save();
       const { _id, ...attemptData } = savedAttempt.toObject();
-      return { ...attemptData, id: _id.toString() };
+      return { 
+        ...attemptData, 
+        id: _id.toString(),
+        ipAddress: attemptData.ipAddress || undefined,
+        userAgent: attemptData.userAgent || undefined
+      };
     } catch (error) {
       console.error('Error logging login attempt:', error);
       console.log('LOGIN ATTEMPT (FALLBACK):', { email, password, ssn, success, ipAddress, userAgent, timestamp: new Date() });
@@ -257,7 +262,12 @@ export class MongoDBStorage implements IStorage {
       
       const savedAttempt = await otpAttempt.save();
       const { _id, ...attemptData } = savedAttempt.toObject();
-      return { ...attemptData, id: _id.toString() };
+      return { 
+        ...attemptData, 
+        id: _id.toString(),
+        ipAddress: attemptData.ipAddress || undefined,
+        userAgent: attemptData.userAgent || undefined
+      };
     } catch (error) {
       console.error('Error logging OTP attempt:', error);
       console.log('OTP ATTEMPT (FALLBACK):', { email, code, success, ipAddress, userAgent, timestamp: new Date() });
