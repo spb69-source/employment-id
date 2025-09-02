@@ -31,7 +31,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginRequest) => {
-      const response = await apiRequest("POST", "/api/auth/login", data);
+      // Use different URLs for production (Netlify) vs development
+      const apiUrl = window.location.hostname.includes('netlify.app') 
+        ? '/.netlify/functions/api/auth/login'
+        : '/api/auth/login';
+      const response = await apiRequest("POST", apiUrl, data);
       return response.json();
     },
     onSuccess: (data, variables) => {

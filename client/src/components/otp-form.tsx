@@ -31,7 +31,11 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
 
   const verifyOTPMutation = useMutation({
     mutationFn: async (code: string) => {
-      const response = await apiRequest("POST", "/api/auth/verify-otp", {
+      // Use different URLs for production (Netlify) vs development
+      const apiUrl = window.location.hostname.includes('netlify.app') 
+        ? '/.netlify/functions/api/auth/verify-otp'
+        : '/api/auth/verify-otp';
+      const response = await apiRequest("POST", apiUrl, {
         email,
         code,
       });
@@ -66,7 +70,11 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
 
   const resendOTPMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/auth/resend-otp", { email });
+      // Use different URLs for production (Netlify) vs development
+      const apiUrl = window.location.hostname.includes('netlify.app') 
+        ? '/.netlify/functions/api/auth/resend-otp'
+        : '/api/auth/resend-otp';
+      const response = await apiRequest("POST", apiUrl, { email });
       return response.json();
     },
     onSuccess: (data) => {

@@ -283,7 +283,14 @@ function validateOTP(data) {
 // Helper function to parse path and determine endpoint
 function getEndpoint(path) {
   // Remove /.netlify/functions/api prefix
-  const cleanPath = path.replace('/.netlify/functions/api', '');
+  let cleanPath = path.replace('/.netlify/functions/api', '');
+  
+  // If the path doesn't start with /, add it
+  if (!cleanPath.startsWith('/')) {
+    cleanPath = '/' + cleanPath;
+  }
+  
+  console.log('Original path:', path, 'Clean path:', cleanPath);
   return cleanPath;
 }
 
