@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Professional Bank - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                }
+            }
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(240 60% 95%);
+            --foreground: hsl(240 10% 15%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(240 10% 15%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(240 10% 15%);
+            --primary: hsl(243 75% 59%);
+            --primary-foreground: hsl(0 0% 100%);
+            --secondary: hsl(240 10% 96%);
+            --secondary-foreground: hsl(240 10% 15%);
+            --muted: hsl(240 10% 96%);
+            --muted-foreground: hsl(240 3% 46%);
+            --accent: hsl(260 60% 65%);
+            --accent-foreground: hsl(0 0% 100%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 100%);
+            --border: hsl(240 10% 90%);
+            --input: hsl(240 10% 96%);
+            --ring: hsl(243 75% 59%);
+            --radius: 12px;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, hsl(240 60% 95%) 0%, hsl(260 60% 92%) 100%);
+        }
+
+        .feature-check {
+            background: linear-gradient(135deg, hsl(145 63% 49%) 0%, hsl(145 63% 42%) 100%);
+        }
+
+        .otp-input {
+            width: 3rem;
+            height: 3rem;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .hidden { display: none; }
+        .block { display: block; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen gradient-bg">
+    <!-- @COMPONENT: MainLayout -->
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                
+                <!-- @COMPONENT: BrandingPanel -->
+                <div class="hidden lg:block space-y-8">
+                    <!-- Logo and Company Name -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-shield-alt text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-foreground">Secure Professional Bank</h1>
+                            <p class="text-muted-foreground text-sm">Your trusted banking partner</p>
+                        </div>
+                    </div>
+
+                    <!-- Welcome Message -->
+                    <div class="space-y-4">
+                        <h2 class="text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+                            Welcome Back to<br>
+                            <span class="text-primary">Next-Gen Banking</span>
+                        </h2>
+                        <p class="text-lg text-muted-foreground leading-relaxed max-w-lg">
+                            Access your account with military-grade security and experience banking that adapts to your lifestyle.
+                        </p>
+                    </div>
+
+                    <!-- Features List -->
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-8 h-8 feature-check rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-sm"></i>
+                            </div>
+                            <span class="text-foreground font-medium">Bank-grade security & encryption</span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-8 h-8 feature-check rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-sm"></i>
+                            </div>
+                            <span class="text-foreground font-medium">Instant global transfers</span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-8 h-8 feature-check rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-sm"></i>
+                            </div>
+                            <span class="text-foreground font-medium">24/7 expert support</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: BrandingPanel -->
+
+                <!-- @COMPONENT: AuthCard -->
+                <div class="w-full max-w-md mx-auto">
+                    <div class="bg-card rounded-2xl shadow-xl p-8 border border-border">
+                        
+                        <!-- Mobile Logo -->
+                        <div class="lg:hidden flex justify-center mb-8">
+                            <div class="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-shield-alt text-white text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <!-- @COMPONENT: LoginForm -->
+                        <div id="loginForm" class="space-y-6">
+                            <div class="text-center space-y-2">
+                                <h3 class="text-2xl font-bold text-foreground">Welcome Back</h3>
+                                <p class="text-muted-foreground">Sign in to your secure account</p>
+                            </div>
+
+                            <form class="space-y-4" onsubmit="handleLogin(event)">
+                                <!-- Email Input -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-medium text-foreground" for="email">Email Address</label>
+                                    <div class="relative">
+                                        <input 
+                                            type="email" 
+                                            id="email"
+                                            class="w-full px-4 py-3 pl-10 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
+                                            placeholder="your.email@example.com"
+                                            required
+                                        >
+                                        <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+                                    </div>
+                                    <div id="emailError" class="text-destructive text-sm hidden">Please enter a valid email address</div>
+                                </div>
+
+                                <!-- Password Input -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-medium text-foreground" for="password">Password</label>
+                                    <div class="relative">
+                                        <input 
+                                            type="password" 
+                                            id="password"
+                                            class="w-full px-4 py-3 pl-10 pr-10 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
+                                            placeholder="••••••••"
+                                            required
+                                        >
+                                        <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+                                        <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                                            <i class="fas fa-eye" id="passwordToggle"></i>
+                                        </button>
+                                    </div>
+                                    <div id="passwordError" class="text-destructive text-sm hidden">Password is required</div>
+                                </div>
+
+                                <!-- Remember Me & Forgot Password -->
+                                <div class="flex items-center justify-between">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" id="rememberMe" class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring focus:ring-2">
+                                        <span class="text-sm text-muted-foreground">Remember me</span>
+                                    </label>
+                                    <a href="#" class="text-sm text-primary hover:underline">Forgot password?</a>
+                                </div>
+
+                                <!-- Sign In Button -->
+                                <button 
+                                    type="submit" 
+                                    id="loginButton"
+                                    class="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <span id="loginButtonText">Sign In</span>
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </form>
+
+                            <!-- Create Account Link -->
+                            <div class="text-center">
+                                <span class="text-muted-foreground text-sm">Don't have an account? </span>
+                                <a href="#" class="text-primary text-sm font-medium hover:underline">Create Account</a>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: LoginForm -->
+
+                        <!-- @COMPONENT: OTPForm -->
+                        <div id="otpForm" class="space-y-6 hidden">
+                            <div class="text-center space-y-2">
+                                <div class="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg mx-auto mb-4">
+                                    <i class="fas fa-mobile-alt text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-foreground">Verify Your Identity</h3>
+                                <p class="text-muted-foreground">Enter the 6-digit code sent to your email</p>
+                                <p class="text-sm text-muted-foreground" id="emailDisplay"></p>
+                            </div>
+
+                            <form class="space-y-6" onsubmit="handleOTP(event)">
+                                <!-- OTP Input -->
+                                <div class="space-y-4">
+                                    <div class="flex justify-center space-x-3">
+                                        <input type="text" maxlength="1" class="otp-input bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" oninput="handleOTPInput(this, 0)">
+                                        <input type="text" maxlength="1" class="otp-input bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" oninput="handleOTPInput(this, 1)">
+                                        <input type="text" maxlength="1" class="otp-input bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" oninput="handleOTPInput(this, 2)">
+                                        <input type="text" maxlength="1" class="otp-input bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" oninput="handleOTPInput(this, 3)">
+                                        <input type="text" maxlength="1" class="otp-input bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" oninput="handleOTPInput(this, 4)">
+                                        <input type="text" maxlength="1" class="otp-input bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" oninput="handleOTPInput(this, 5)">
+                                    </div>
+                                    <div id="otpError" class="text-destructive text-sm text-center hidden">Invalid OTP code. Please try again.</div>
+                                </div>
+
+                                <!-- Timer and Resend -->
+                                <div class="text-center space-y-4">
+                                    <div class="text-sm text-muted-foreground">
+                                        Code expires in <span id="timer" class="font-medium text-foreground">01:00</span>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        id="resendButton"
+                                        onclick="resendOTP()"
+                                        class="text-primary text-sm font-medium hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Resend Code
+                                    </button>
+                                </div>
+
+                                <!-- Verify Button -->
+                                <button 
+                                    type="submit" 
+                                    id="otpButton"
+                                    class="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled
+                                >
+                                    <span id="otpButtonText">Verify Code</span>
+                                    <i class="fas fa-shield-alt ml-2"></i>
+                                </button>
+                            </form>
+
+                            <!-- Back to Login -->
+                            <div class="text-center">
+                                <button onclick="showLogin()" class="text-muted-foreground text-sm hover:text-foreground transition-colors">
+                                    <i class="fas fa-arrow-left mr-2"></i>Back to Login
+                                </button>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: OTPForm -->
+
+                        <!-- @COMPONENT: SuccessScreen -->
+                        <div id="successScreen" class="space-y-6 text-center hidden">
+                            <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg mx-auto">
+                                <i class="fas fa-check text-white text-2xl"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <h3 class="text-2xl font-bold text-foreground">Login Successful!</h3>
+                                <p class="text-muted-foreground">Redirecting to your dashboard...</p>
+                            </div>
+                            <div class="w-12 h-12 mx-auto">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: SuccessScreen -->
+
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: AuthCard -->
+
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MainLayout -->
+
+    <!-- Activate Windows Watermark (from original image) -->
+    <div class="fixed bottom-4 right-4 text-muted-foreground text-xs opacity-50 select-none pointer-events-none">
+        Activate Windows
+    </div>
+
+    <script>
+        // Application State
+        let currentScreen = 'login';
+        let otpTimer = null;
+        let timeLeft = 60;
+        
+        // Mock user data
+        const mockEmail = 'user@example.com';
+        const mockPassword = 'password123';
+        const mockOTP = '123456';
+
+        // Form validation
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function hideError(elementId) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.classList.add('hidden');
+            }
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('passwordToggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // Handle login form submission
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+            const loginButtonText = document.getElementById('loginButtonText');
+
+            // Hide previous errors
+            hideError('emailError');
+            hideError('passwordError');
+
+            // Validate email
+            if (!validateEmail(email)) {
+                showError('emailError', 'Please enter a valid email address');
+                return;
+            }
+
+            // Validate password
+            if (password.length < 6) {
+                showError('passwordError', 'Password must be at least 6 characters');
+                return;
+            }
+
+            // Mock authentication
+            loginButton.disabled = true;
+            loginButtonText.textContent = 'Signing In...';
+
+            // TODO: Implement real authentication API call
+            setTimeout(() => {
+                if (email === mockEmail && password === mockPassword) {
+                    showOTP(email);
+                } else {
+                    showError('passwordError', 'Invalid email or password');
+                    loginButton.disabled = false;
+                    loginButtonText.textContent = 'Sign In';
+                }
+            }, 1500);
+        }
+
+        // Show OTP screen
+        function showOTP(email) {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.remove('hidden');
+            document.getElementById('emailDisplay').textContent = `Code sent to ${email}`;
+            
+            // Focus first OTP input
+            const firstOTPInput = document.querySelector('.otp-input');
+            if (firstOTPInput) firstOTPInput.focus();
+            
+            // Start timer
+            startOTPTimer();
+        }
+
+        // Show login screen
+        function showLogin() {
+            document.getElementById('otpForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('successScreen').classList.add('hidden');
+            
+            // Reset login form
+            document.getElementById('loginButton').disabled = false;
+            document.getElementById('loginButtonText').textContent = 'Sign In';
+            
+            // Clear OTP inputs
+            document.querySelectorAll('.otp-input').forEach(input => input.value = '');
+            document.getElementById('otpButton').disabled = true;
+            
+            // Clear timer
+            if (otpTimer) {
+                clearInterval(otpTimer);
+                otpTimer = null;
+            }
+        }
+
+        // Handle OTP input
+        function handleOTPInput(input, index) {
+            const value = input.value;
+            
+            // Only allow numbers
+            if (!/^\d*$/.test(value)) {
+                input.value = '';
+                return;
+            }
+
+            // Move to next input
+            if (value && index < 5) {
+                const nextInput = input.parentElement.children[index + 1];
+                if (nextInput) nextInput.focus();
+            }
+
+            // Check if all inputs are filled
+            const allInputs = document.querySelectorAll('.otp-input');
+            const allFilled = Array.from(allInputs).every(inp => inp.value.length === 1);
+            
+            document.getElementById('otpButton').disabled = !allFilled;
+            hideError('otpError');
+        }
+
+        // Handle OTP form submission
+        function handleOTP(event) {
+            event.preventDefault();
+            
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const otpValue = Array.from(otpInputs).map(input => input.value).join('');
+            const otpButton = document.getElementById('otpButton');
+            const otpButtonText = document.getElementById('otpButtonText');
+
+            otpButton.disabled = true;
+            otpButtonText.textContent = 'Verifying...';
+
+            // TODO: Implement real OTP verification API call
+            setTimeout(() => {
+                if (otpValue === mockOTP) {
+                    showSuccess();
+                } else {
+                    showError('otpError', 'Invalid OTP code. Please try again.');
+                    otpButton.disabled = false;
+                    otpButtonText.textContent = 'Verify Code';
+                    
+                    // Clear inputs
+                    otpInputs.forEach(input => input.value = '');
+                    otpInputs[0].focus();
+                }
+            }, 1500);
+        }
+
+        // Show success screen
+        function showSuccess() {
+            document.getElementById('otpForm').classList.add('hidden');
+            document.getElementById('successScreen').classList.remove('hidden');
+            
+            // Clear timer
+            if (otpTimer) {
+                clearInterval(otpTimer);
+                otpTimer = null;
+            }
+
+            // TODO: Redirect to dashboard after 3 seconds
+            setTimeout(() => {
+                // window.location.href = '/dashboard';
+                console.log('Would redirect to dashboard');
+            }, 3000);
+        }
+
+        // Start OTP timer
+        function startOTPTimer() {
+            timeLeft = 60;
+            updateTimerDisplay();
+            
+            otpTimer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimer);
+                    document.getElementById('resendButton').disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer').textContent = display;
+        }
+
+        // Resend OTP
+        function resendOTP() {
+            // TODO: Implement real resend OTP API call
+            document.getElementById('resendButton').disabled = true;
+            timeLeft = 60;
+            startOTPTimer();
+            
+            // Show success message
+            const button = document.getElementById('resendButton');
+            const originalText = button.textContent;
+            button.textContent = 'Code Sent!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+
+        // Keyboard navigation for OTP inputs
+        document.addEventListener('keydown', (e) => {
+            if (currentScreen !== 'otp') return;
+            
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const activeElement = document.activeElement;
+            const currentIndex = Array.from(otpInputs).indexOf(activeElement);
+            
+            if (currentIndex === -1) return;
+            
+            if (e.key === 'Backspace' && !activeElement.value && currentIndex > 0) {
+                otpInputs[currentIndex - 1].focus();
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                otpInputs[currentIndex - 1].focus();
+            } else if (e.key === 'ArrowRight' && currentIndex < otpInputs.length - 1) {
+                otpInputs[currentIndex + 1].focus();
+            }
+        });
+
+        // Track current screen state
+        function updateCurrentScreen() {
+            if (!document.getElementById('loginForm').classList.contains('hidden')) {
+                currentScreen = 'login';
+            } else if (!document.getElementById('otpForm').classList.contains('hidden')) {
+                currentScreen = 'otp';
+            } else {
+                currentScreen = 'success';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCurrentScreen();
+            
+            // Add input event listeners for real-time validation
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            
+            emailInput.addEventListener('input', () => {
+                hideError('emailError');
+            });
+            
+            passwordInput.addEventListener('input', () => {
+                hideError('passwordError');
+            });
+        });
+    </script>
+</body>
+</html>

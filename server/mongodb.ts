@@ -6,16 +6,21 @@ let isConnected = false;
 
 export async function connectToMongoDB() {
   if (isConnected) {
-    return;
+    return true;
   }
 
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI, {
+      connectTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 10000,
+    });
     isConnected = true;
     console.log('Connected to MongoDB');
+    return true;
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
-    throw error;
+    console.error('This is likely due to IP whitelist restrictions in MongoDB Atlas');
+    return false;
   }
 }
 
