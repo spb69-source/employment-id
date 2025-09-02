@@ -64,16 +64,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     <div className="space-y-6">
       <div className="text-center space-y-4">
         <h2 className="text-xl font-semibold text-foreground">Sign in to ID</h2>
-        <div className="text-sm text-muted-foreground">
-          New to ID?{" "}
-          <a 
-            href="#" 
-            className="text-primary hover:underline"
-            data-testid="link-create-account"
-          >
-            Create an ID account
-          </a>
-        </div>
       </div>
 
       <div className="text-sm text-muted-foreground mb-4">

