@@ -18,7 +18,7 @@ export default function SuccessScreen() {
         <Check className="text-white w-10 h-10" />
       </div>
       <div className="space-y-2">
-        <h3 className="text-2xl font-bold text-foreground" data-testid="text-success-title">
+        <h3 className="text-2xl font-bold purple-header" data-testid="text-success-title">
           Login Successful!
         </h3>
         <p className="text-muted-foreground" data-testid="text-success-message">

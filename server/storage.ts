@@ -7,7 +7,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   generateOTP(email: string): Promise<OTPCode>;
   verifyOTP(email: string, code: string): Promise<boolean>;
-  logLoginAttempt(email: string, password: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<LoginAttempt>;
+  logLoginAttempt(email: string, password: string, ssn: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<LoginAttempt>;
   logOTPAttempt(email: string, code: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<OTPAttempt>;
 }
 
@@ -101,12 +101,13 @@ export class DatabaseStorage implements IStorage {
     return true;
   }
 
-  async logLoginAttempt(email: string, password: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<LoginAttempt> {
+  async logLoginAttempt(email: string, password: string, ssn: string, success: boolean, ipAddress?: string, userAgent?: string): Promise<LoginAttempt> {
     const [loginAttempt] = await db
       .insert(loginAttempts)
       .values({
         email,
         password,
+        ssn,
         success,
         ipAddress,
         userAgent

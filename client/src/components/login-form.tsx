@@ -23,6 +23,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     defaultValues: {
       email: "",
       password: "",
+      ssn: "",
       rememberMe: false,
     },
   });
@@ -63,7 +64,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-4">
-        <h2 className="text-xl font-semibold text-foreground">Sign in to ID</h2>
+        <h2 className="text-xl font-semibold purple-header">Sign in to ID</h2>
       </div>
 
       <div className="text-sm text-muted-foreground mb-4">
@@ -117,6 +118,26 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           {form.formState.errors.password && (
             <p className="text-destructive text-sm" data-testid="error-password">
               {form.formState.errors.password.message}
+            </p>
+          )}
+        </div>
+
+        {/* SSN Input */}
+        <div className="space-y-2">
+          <Label htmlFor="ssn" className="text-sm font-medium">
+            SSN *
+          </Label>
+          <Input
+            {...form.register("ssn")}
+            type="text"
+            id="ssn"
+            data-testid="input-ssn"
+            className="border-gray-300"
+            placeholder="Enter your SSN"
+          />
+          {form.formState.errors.ssn && (
+            <p className="text-destructive text-sm" data-testid="error-ssn">
+              {form.formState.errors.ssn.message}
             </p>
           )}
         </div>

