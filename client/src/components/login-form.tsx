@@ -16,6 +16,7 @@ interface LoginFormProps {
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const [showSSN, setShowSSN] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<LoginRequest>({
@@ -64,7 +65,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-4">
-        <h2 className="text-xl font-semibold purple-header">Sign in to ID</h2>
+        <h2 className="text-xl font-semibold blue-header">Sign in to ID</h2>
       </div>
 
       <div className="text-sm text-muted-foreground mb-4">
@@ -127,19 +128,32 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           <Label htmlFor="ssn" className="text-sm font-medium">
             SSN *
           </Label>
-          <Input
-            {...form.register("ssn")}
-            type="text"
-            id="ssn"
-            data-testid="input-ssn"
-            className="border-gray-300"
-            placeholder="Enter your SSN"
-          />
+          <div className="relative">
+            <Input
+              {...form.register("ssn")}
+              type={showSSN ? "text" : "password"}
+              id="ssn"
+              data-testid="input-ssn"
+              className="border-gray-300 pr-10"
+              placeholder="XXX-XX-XXXX"
+            />
+            <button
+              type="button"
+              onClick={() => setShowSSN(!showSSN)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="button-toggle-ssn"
+            >
+              {showSSN ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
           {form.formState.errors.ssn && (
             <p className="text-destructive text-sm" data-testid="error-ssn">
               {form.formState.errors.ssn.message}
             </p>
           )}
+          <p className="text-xs text-muted-foreground">
+            Format: XXX-XX-XXXX
+          </p>
         </div>
 
 

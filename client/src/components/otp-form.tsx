@@ -140,7 +140,7 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
         <div className="w-16 h-16 shield-gradient rounded-xl flex items-center justify-center shadow-lg mx-auto mb-4">
           <Smartphone className="text-white w-8 h-8" />
         </div>
-        <h3 className="text-2xl font-bold purple-header">Verify Your Identity</h3>
+        <h3 className="text-2xl font-bold blue-header">Verify Your Identity</h3>
         <p className="text-muted-foreground">Enter the 6-digit code sent to your email</p>
         <p className="text-sm text-muted-foreground" data-testid="text-email-display">
           {email}

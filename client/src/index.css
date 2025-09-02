@@ -112,6 +112,6 @@
   animation: checkmark 0.6s ease-in-out;
 }
 
-.purple-header {
-  color: hsl(260, 60%, 50%) !important;
+.blue-header {
+  color: hsl(214, 84%, 56%) !important;
 }
