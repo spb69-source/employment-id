@@ -151,9 +151,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               {form.formState.errors.ssn.message}
             </p>
           )}
-          <p className="text-xs text-muted-foreground">
-            Format: XXX-XX-XXXX
-          </p>
         </div>
 
 
